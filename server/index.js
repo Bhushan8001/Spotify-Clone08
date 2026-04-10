@@ -2,16 +2,13 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+const { API_PORT, CLIENT_ORIGIN, MONGODB_URI } = require('../env');
 
 const songsRouter = require('./routes/songs');
 
 const app = express();
 
-const PORT = process.env.PORT || 4000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/spotify';
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
+const PORT = API_PORT;
 
 app.use(
   cors({

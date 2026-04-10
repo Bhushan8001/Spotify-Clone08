@@ -5,6 +5,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const Song = require('./Song');
+const { PORT, MONGODB_URI } = require('./env');
 
 const app = express();
 app.use(cors());
@@ -23,7 +24,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 mongoose
-  .connect('mongodb://127.0.0.1:27017/spotifyDB')
+  .connect(MONGODB_URI)
   .then(() => console.log('MongoDB Connected'))
   .catch((err) => console.log(err));
 
@@ -79,5 +80,4 @@ app.delete('/songs/:id', async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
