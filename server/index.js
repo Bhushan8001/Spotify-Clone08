@@ -36,8 +36,8 @@ mongoose
     });
     app.locals.bucket = bucket;
 
-    app.listen(PORT, () => {
-      console.log(`API running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`API running on port ${PORT}`);
     });
   })
   .catch((err) => {
