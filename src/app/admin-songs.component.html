@@ -1,0 +1,42 @@
+<section class="admin-page">
+  <div class="admin-page__header">
+    <div>
+      <h2>Admin: Manage Songs</h2>
+      <p>Delete songs from MongoDB and remove the stored file.</p>
+    </div>
+    <button class="admin-page__button" type="button" (click)="loadSongs()">Refresh</button>
+  </div>
+
+  <div *ngIf="loading" class="admin-page__state">Loading songs...</div>
+  <div *ngIf="error" class="admin-page__state admin-page__state--error">{{ error }}</div>
+
+  <div class="admin-page__list" *ngIf="!loading && songs.length">
+    <div class="admin-card" *ngFor="let song of songs">
+      <button
+        type="button"
+        class="admin-card__poster"
+        (click)="playSong.emit(song)"
+        [attr.aria-label]="'Play ' + song.title"
+      >
+        <img [src]="song.image" [alt]="song.title" />
+      </button>
+      <div class="admin-card__info">
+        <h3>{{ song.title }}</h3>
+        <p>{{ song.artist }}</p>
+        <small>{{ song.filePath }}</small>
+      </div>
+      <button
+        class="admin-card__delete"
+        type="button"
+        [disabled]="!song._id || deleting[song._id]"
+        (click)="deleteSong(song)"
+      >
+        {{ deleting[song._id || ''] ? 'Deleting...' : 'Delete' }}
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !songs.length && !error" class="admin-page__state">
+    No songs to manage yet.
+  </div>
+</section>

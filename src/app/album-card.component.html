@@ -1,0 +1,24 @@
+<div class="album-card">
+  <div class="album-card__media" (click)="onPlay($event)">
+    <img
+      [src]="album.image"
+      [alt]="album.title"
+      class="album-card__image"
+    />
+    <div class="album-card__overlay">
+      <button
+        (click)="onPlay($event)"
+        class="album-card__action album-card__action--play"
+        aria-label="Play"
+      >
+        <svg class="album-card__icon" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </button>
+      </div>
+  </div>
+  <p class="album-card__title">
+    {{ album.title }}
+  </p>
+  <p class="album-card__artist">{{ album.artist }}</p>
+</div>

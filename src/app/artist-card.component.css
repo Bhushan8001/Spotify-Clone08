@@ -1,0 +1,100 @@
+:host {
+  display: block;
+}
+
+.artist-card {
+  text-align: center;
+  cursor: pointer;
+  padding: 12px 10px 16px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.artist-card__media {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #1f1f1f;
+}
+
+.artist-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.artist-card__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0);
+  transition: background 0.3s ease;
+}
+
+.artist-card__action {
+  border: none;
+  border-radius: 999px;
+  background: var(--spotify-green);
+  color: #0a0a0a;
+  padding: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+}
+
+.artist-card__icon {
+  width: 22px;
+  height: 22px;
+}
+
+.artist-card__name {
+  margin: 0 0 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.2s ease;
+}
+
+.artist-card__role {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.artist-card:hover .artist-card__image {
+  transform: scale(1.05);
+}
+
+.artist-card:hover .artist-card__overlay {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.artist-card:hover .artist-card__action,
+.artist-card:focus-within .artist-card__action {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.artist-card:hover .artist-card__name {
+  color: var(--spotify-green);
+}
+
+.artist-card__action:hover {
+  background: #2fe570;
+}
+
+.artist-card:hover {
+  background: #242424;
+  transform: translateY(-2px);
+}
+
+
+
+
+

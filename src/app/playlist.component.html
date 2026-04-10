@@ -1,0 +1,537 @@
+<section class="playlist">
+  <ng-container [ngSwitch]="view">
+    <ng-container *ngSwitchCase="'home'">
+      <div class="mobile-header mobile-only">
+        <div class="mobile-header__row">
+          <button type="button" class="mobile-header__avatar">B</button>
+          <div class="mobile-header__pills">
+            <button type="button" class="mobile-pill mobile-pill--active">All</button>
+            <button type="button" class="mobile-pill">Music</button>
+            <button type="button" class="mobile-pill">Podcasts</button>
+          </div>
+        </div>
+      </div>
+      <div class="playlist__section-header-wrapper"
+        [style.background]="homeHoverBackground || homeCompactBackground || null">
+        <div class="playlist__section-header">
+          <div class="playlist__tab-group">
+            <button class="playlist__tab playlist__tab--active">All</button>
+            <button class="playlist__tab">Music</button>
+            <button class="playlist__tab">Podcasts</button>
+          </div>
+        </div>
+      </div>
+      <div class="playlist__top-grid-shell playlist__section--compact"
+        [style.background]="homeHoverBackground || homeCompactBackground || null">
+        <div class="playlist__top-grid">
+          <div class="playlist__top-card" *ngFor="let album of albums.slice(0, 8)" (click)="playSong.emit(album)"
+            (mouseenter)="onCompactHover(album.image, 'home')" (mouseleave)="clearCompactHover('home')">
+            <img class="playlist__top-image" [src]="album.image" [alt]="album.title" />
+            <div class="playlist__top-info">
+              <h3>{{ album.title }}</h3>
+              <p>{{ album.artist }}</p>
+            </div>
+            <button class="playlist__top-btn" aria-label="Play">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="customPlaylists.length" class="playlist__library-select">
+        <label>
+          Add song to:
+          <select [(ngModel)]="selectedPlaylistName">
+            <option value="">Favorites</option>
+            <option *ngFor="let pl of customPlaylists" [value]="pl.name">{{ pl.name }}</option>
+          </select>
+        </label>
+      </div>
+
+      <h2 class="mobile-section-title mobile-only">Picked for you</h2>
+      <div class="picked-card mobile-only" *ngIf="trendingSongs.length" (click)="playSong.emit(trendingSongs[0])">
+        <img [src]="trendingSongs[0].image" [alt]="trendingSongs[0].title" />
+        <div class="picked-card__info">
+          <span class="picked-card__subtitle">Playlist</span>
+          <h3 class="picked-card__title">{{ trendingSongs[0].title }}</h3>
+          <div class="picked-card__actions">
+            <button class="picked-card__add" aria-label="Add" (click)="$event.stopPropagation()">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4v16m-8-8h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button class="picked-card__play" aria-label="Play" (click)="$event.stopPropagation(); playSong.emit(trendingSongs[0])">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <app-trending-songs class="desktop-only" [songs]="trendingSongs" (playSong)="playSong.emit($event)"
+        (addToLibrary)="onLibraryAction($event)"></app-trending-songs>
+
+      <div class="playlist__section">
+        <h2 class="mobile-section-title mobile-only">It's New Music Friday!</h2>
+        <div class="playlist__section-header desktop-only">
+          <h2 class="playlist__title">Popular albums and singles</h2>
+          <a href="#" class="playlist__link">Show all</a>
+        </div>
+        <div class="playlist__carousel hide-scrollbar">
+          <app-album-card *ngFor="let album of albums" [album]="album" (playSong)="playSong.emit($event)"
+            (addToLibrary)="onLibraryAction($event)"></app-album-card>
+        </div>
+      </div>
+
+      <div class="playlist__section">
+        <h2 class="mobile-section-title mobile-only">Recommended Stations</h2>
+        <div class="playlist__section-header desktop-only">
+          <h2 class="playlist__title">Popular radio</h2>
+          <a href="#" class="playlist__link">Show all</a>
+        </div>
+        <div class="playlist__carousel hide-scrollbar">
+          <app-album-card *ngFor="let station of radioChannels" [album]="station"
+            (playSong)="playSong.emit($event)"></app-album-card>
+        </div>
+      </div>
+
+      <app-popular-artists [artists]="popularArtists"></app-popular-artists>
+
+      <div class="playlist__section desktop-only">
+        <div class="playlist__section-header desktop-only">
+          <div class="playlist__section-heading">
+            <h2 class="playlist__title">Reels for you</h2>
+            <p class="playlist__hint desktop-only">Quick video previews inspired by Spotify clips.</p>
+          </div>
+          <a href="#" class="playlist__link">Show all</a>
+        </div>
+        <div class="playlist__reels desktop-only">
+          <div class="reel-card" *ngFor="let reel of reels" (mouseenter)="playReel(reelVideo)"
+            (mouseleave)="pauseReel(reelVideo)">
+            <img class="reel-card__poster" [src]="reel.poster" [alt]="reel.title" />
+            <video #reelVideo class="reel-card__video" [src]="reel.video" muted loop playsinline
+              preload="metadata"></video>
+            <div class="reel-card__overlay">
+              <div class="reel-card__badge">Preview</div>
+              <div class="reel-card__meta">
+                <h3>{{ reel.title }}</h3>
+                <p>{{ reel.creator }}</p>
+              </div>
+              <div class="reel-card__footer">
+                <span>{{ reel.duration }}</span>
+              </div>
+            </div>
+            <button class="reel-card__play" aria-label="Play reel">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="app-footer desktop-only">
+        <div class="app-footer__top">
+          <div class="app-footer__columns">
+            <div class="app-footer__column">
+              <h4 class="app-footer__title">Company</h4>
+              <a class="app-footer__link" href="#">About</a>
+              <a class="app-footer__link" href="#">Jobs</a>
+              <a class="app-footer__link" href="#">For the Record</a>
+            </div>
+            <div class="app-footer__column">
+              <h4 class="app-footer__title">Communities</h4>
+              <a class="app-footer__link" href="#">For Artists</a>
+              <a class="app-footer__link" href="#">Developers</a>
+              <a class="app-footer__link" href="#">Advertising</a>
+              <a class="app-footer__link" href="#">Investors</a>
+              <a class="app-footer__link" href="#">Vendors</a>
+            </div>
+            <div class="app-footer__column">
+              <h4 class="app-footer__title">Useful links</h4>
+              <a class="app-footer__link" href="#">Support</a>
+              <a class="app-footer__link" href="#">Free Mobile App</a>
+              <a class="app-footer__link" href="#">Popular by Country</a>
+              <a class="app-footer__link" href="#">Import your music</a>
+            </div>
+            <div class="app-footer__column">
+              <h4 class="app-footer__title">Spotify Plans</h4>
+              <a class="app-footer__link" href="#">Premium Lite</a>
+              <a class="app-footer__link" href="#">Premium Standard</a>
+              <a class="app-footer__link" href="#">Premium Platinum</a>
+              <a class="app-footer__link" href="#">Premium Student</a>
+              <a class="app-footer__link" href="#">Spotify Free</a>
+            </div>
+          </div>
+          <div class="app-footer__socials">
+            <a class="app-footer__social" href="#" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm10 2H7a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 3.5a4.5 4.5 0 1 1 0 9a4.5 4.5 0 0 1 0-9zm0 2a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5zM17.25 6.5a1 1 0 1 1 0 2a1 1 0 0 1 0-2z" />
+              </svg>
+            </a>
+            <a class="app-footer__social" href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.9 2.2h3.4l-7.4 8.4L23 21.8h-6.5l-5.1-6.7-5.9 6.7H2l7.9-9.1L1 2.2h6.7l4.6 6.1 5.6-6.1zm-1.2 17.1h1.9L6.9 4.6H4.9l12.8 14.7z" />
+              </svg>
+            </a>
+            <a class="app-footer__social" href="#" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M13.5 9.2V7.6c0-.9.6-1.1 1-1.1h1.8V3.5h-2.5c-2.8 0-3.8 1.7-3.8 3.9v1.8H7.6v2.9h2.4V21h3.5v-8.9h2.4l.4-2.9h-2.8z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="app-footer__bottom">
+          <div class="app-footer__legal">
+            <a class="app-footer__legal-link" href="#">Legal</a>
+            <a class="app-footer__legal-link" href="#">Safety & Privacy Center</a>
+            <a class="app-footer__legal-link" href="#">Privacy Policy</a>
+            <a class="app-footer__legal-link" href="#">Cookies</a>
+            <a class="app-footer__legal-link" href="#">About Ads</a>
+            <a class="app-footer__legal-link" href="#">Accessibility</a>
+          </div>
+          <div class="app-footer__copyright">© 2026 Spotify AB</div>
+        </div>
+      </footer>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'search'">
+      <div class="mobile-header mobile-only mobile-header--search">
+        <div class="mobile-header__row">
+          <button type="button" class="mobile-header__avatar">B</button>
+          <h2 class="mobile-header__title">Search</h2>
+          <button type="button" class="mobile-header__icon" aria-label="Camera">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M4 7h3l2-2h6l2 2h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zm8 3a4 4 0 1 0 0 8a4 4 0 0 0 0-8zm0 2.2a1.8 1.8 0 1 1 0 3.6a1.8 1.8 0 0 1 0-3.6z" />
+            </svg>
+          </button>
+        </div>
+        <div class="mobile-header__search">
+          <span class="mobile-header__search-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M10 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12a6 6 0 0 0 0-12zm9.2 14.8l-3.4-3.4a1 1 0 0 0-1.4 1.4l3.4 3.4a1 1 0 0 0 1.4-1.4z" />
+            </svg>
+          </span>
+          <input type="text" placeholder="What do you want to listen to?" [ngModel]="searchQuery"
+            (ngModelChange)="search.emit($event)" />
+        </div>
+      </div>
+      <div class="playlist__section playlist__section--compact desktop-only"
+        [style.background]="libraryHoverBackground || libraryCompactBackground || null">
+        <div class="playlist__section-header">
+          <h2 class="playlist__title">Recently played</h2>
+          <a href="#" class="playlist__link">Show all</a>
+        </div>
+        <div class="playlist__mini-row hide-scrollbar">
+          <div class="playlist__mini-card"
+            *ngFor="let song of favoriteSongs.length ? favoriteSongs.slice(-8) : allSongs.slice(0, 8)"
+            (click)="playSong.emit(song)" (mouseenter)="onCompactHover(song.image, 'library')"
+            (mouseleave)="clearCompactHover('library')">
+            <img class="playlist__mini-image" [src]="song.image" [alt]="song.title" />
+            <div class="playlist__mini-info">
+              <h3>{{ song.title }}</h3>
+              <p>{{ song.artist }}</p>
+            </div>
+            <button *ngIf="customPlaylists.length" class="playlist__mini-add" type="button" aria-label="Add to playlist"
+              (click)="onAddSongToDefaultPlaylist(song); $event.stopPropagation()">
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="playlist__section mobile-only" style="padding-top: 0">
+        <h2 class="mobile-section-title">Start browsing</h2>
+        <div class="start-browsing">
+           <div class="browse-card color-1">
+              <h3>Music</h3>
+              <img src="https://i.scdn.co/image/ab67706f000000029ce23f95e2cd0cf4f7ab30dd" alt="">
+           </div>
+           <div class="browse-card color-2">
+              <h3>Podcasts</h3>
+              <img src="https://i.scdn.co/image/ab6765630000ba8a81f07e1ead0317e07a216fcb" alt="">
+           </div>
+           <div class="browse-card color-3">
+              <h3>Live Events</h3>
+              <img src="https://concerts.spotifycdn.com/images/live-events_category-image.jpg" alt="">
+           </div>
+           <div class="browse-card color-4">
+              <h3>Home of I-Pop</h3>
+              <img src="https://i.scdn.co/image/ab67706f00000002ab4d45be7ddfec8de84260aa" alt="">
+           </div>
+        </div>
+      </div>
+
+      <div class="playlist__section mobile-only">
+        <h2 class="mobile-section-title mobile-only">Discover something new</h2>
+        <div class="playlist__reels playlist__reels--mobile hide-scrollbar">
+          <div class="reel-card" *ngFor="let reel of reels" (mouseenter)="playReel(reelVideo)"
+            (mouseleave)="pauseReel(reelVideo)">
+            <img class="reel-card__poster" [src]="reel.poster" [alt]="reel.title" />
+            <video #reelVideo class="reel-card__video" [src]="reel.video" muted loop playsinline
+              preload="metadata"></video>
+            <div class="reel-card__overlay">
+              <div class="reel-card__badge">Preview</div>
+              <div class="reel-card__meta">
+                <h3>{{ reel.title }}</h3>
+                <p>{{ reel.creator }}</p>
+              </div>
+              <div class="reel-card__footer">
+                <span>{{ reel.duration }}</span>
+              </div>
+            </div>
+            <button class="reel-card__play" aria-label="Play reel">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="playlist__section">
+        <h2 class="playlist__title playlist__title--spaced desktop-only">Search results</h2>
+        <h2 class="mobile-section-title mobile-only">Browse all</h2>
+        <div *ngIf="customPlaylists.length" class="playlist__library-select playlist__library-select--search desktop-only">
+          <label>
+            Add song to:
+            <select [(ngModel)]="selectedPlaylistName">
+              <option value="">Favorites</option>
+              <option *ngFor="let pl of customPlaylists" [value]="pl.name">{{ pl.name }}</option>
+            </select>
+          </label>
+        </div>
+        <div class="playlist__grid desktop-only">
+          <app-album-card *ngFor="let song of filteredSongs" [album]="song" (playSong)="playSong.emit($event)"
+            (addToLibrary)="onLibraryAction($event)"></app-album-card>
+        </div>
+        <div class="browse-grid mobile-only">
+          <div class="browse-card" *ngFor="let song of filteredSongs" (click)="playSong.emit(song)">
+             <h3>{{ song.title }}</h3>
+             <img [src]="song.image" [alt]="song.title">
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'upload'">
+      <div class="mobile-header mobile-only mobile-header--upload">
+        <div class="mobile-header__row">
+          <button type="button" class="mobile-header__avatar">B</button>
+          <h2 class="mobile-header__title">Upload</h2>
+        </div>
+      </div>
+      <div class="playlist__section mobile-only">
+        <div class="playlist__upload playlist__upload--mobile">
+          <div class="playlist__upload-header">
+            <div>
+              <span class="playlist__upload-eyebrow">Upload Center</span>
+              <h3>Share your song</h3>
+              <p>Upload a track right from your phone.</p>
+            </div>
+            <span class="playlist__upload-badge">Mobile</span>
+          </div>
+          <form class="playlist__upload-form playlist__upload-form--mobile" (ngSubmit)="onUploadSong()">
+            <input class="playlist__input" type="text" name="uploadTitle" [(ngModel)]="uploadTitle"
+              placeholder="Song title" required />
+            <input class="playlist__input" type="text" name="uploadArtist" [(ngModel)]="uploadArtist"
+              placeholder="Artist" required />
+            <input class="playlist__input" type="text" name="uploadAlbum" [(ngModel)]="uploadAlbum"
+              placeholder="Album (optional)" />
+            <input class="playlist__input" type="url" name="uploadImage" [(ngModel)]="uploadImage"
+              placeholder="Cover image URL (optional)" />
+            <div class="playlist__upload-file">
+              <input #uploadFileInputMobile type="file" accept="audio/*" (change)="onUploadFileSelected($event)" />
+              <span class="playlist__upload-file-label">
+                {{ uploadFile?.name || 'Choose audio file (mp3, wav, etc.)' }}
+              </span>
+            </div>
+            <button class="playlist__button" type="submit" [disabled]="uploading">
+              {{ uploading ? 'Uploading...' : 'Upload song' }}
+            </button>
+          </form>
+          <p class="playlist__upload-help">Upload your song from here.</p>
+          <div *ngIf="uploadError" class="playlist__upload-status playlist__upload-status--error">
+            {{ uploadError }}
+          </div>
+          <div *ngIf="uploadSuccess" class="playlist__upload-status playlist__upload-status--success">
+            {{ uploadSuccess }}
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="'library'">
+      <div class="mobile-header mobile-only mobile-header--library">
+        <div class="mobile-header__row">
+          <button type="button" class="mobile-header__avatar">B</button>
+          <h2 class="mobile-header__title">Your Library</h2>
+          <div class="mobile-header__actions">
+            <button type="button" class="mobile-header__icon" aria-label="Search library">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M10 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12a6 6 0 0 0 0-12zm9.2 14.8l-3.4-3.4a1 1 0 0 0-1.4 1.4l3.4 3.4a1 1 0 0 0 1.4-1.4z" />
+              </svg>
+            </button>
+            <button type="button" class="mobile-header__icon" aria-label="Create library" (click)="openMobileCreate()">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M11 5h2v14h-2zM5 11h14v2H5z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="mobile-header__pills">
+          <button type="button" class="mobile-pill mobile-pill--active">Playlists</button>
+          <button type="button" class="mobile-pill">Artists</button>
+        </div>
+      </div>
+      <div class="playlist__modal-backdrop" *ngIf="isAddSongModalOpen">
+        <div class="playlist__modal">
+          <div class="playlist__modal-header">
+            <h3>Add song to {{ addSongModalPlaylist?.name }}</h3>
+            <button type="button" class="playlist__modal-close" (click)="closeAddSongModal()">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="playlist__modal-backdrop" *ngIf="deleteConfirmOpen">
+        <div class="playlist__modal">
+          <div class="playlist__modal-header">
+            <h3>Delete playlist</h3>
+            <button type="button" class="playlist__modal-close" (click)="cancelDelete()">✕</button>
+          </div>
+          <div class="playlist__modal-body">
+            <p>Are you sure you want to delete "<strong>{{ deleteTargetPlaylist }}</strong>"? This action cannot be
+              undone.</p>
+          </div>
+          <div class="playlist__modal-actions">
+            <button type="button" class="playlist__button-secondary" (click)="cancelDelete()">Cancel</button>
+            <button type="button" class="playlist__button playlist__button--danger"
+              (click)="confirmDelete()">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="playlist__modal-backdrop" *ngIf="isAddSongModalOpen">
+        <div class="playlist__modal">
+          <div class="playlist__modal-header">
+            <h3>Add song to {{ addSongModalPlaylist?.name }}</h3>
+            <button type="button" class="playlist__modal-close" (click)="closeAddSongModal()">✕</button>
+          </div>
+          <div class="playlist__modal-search">
+            <input [(ngModel)]="addSongModalQuery" type="search" placeholder="Search present songs" />
+          </div>
+          <div class="playlist__modal-list">
+            <div *ngFor="let song of modalPresentSongs" class="playlist__modal-item">
+              <div class="playlist__modal-item-info">
+                <img [src]="song.image" [alt]="song.title" />
+                <div>
+                  <strong>{{ song.title }}</strong>
+                  <p>{{ song.artist }}</p>
+                </div>
+              </div>
+              <button type="button" [disabled]="isSongInModalPlaylist(song)" (click)="addSongToModalPlaylist(song)">
+                {{ isSongInModalPlaylist(song) ? 'Added' : 'Add' }}
+              </button>
+            </div>
+            <div *ngIf="modalPresentSongs.length === 0" class="playlist__modal-empty">
+              No songs found.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="mobile-create-section" class="library-mobile-create mobile-only">
+        <div class="library-mobile-create__header">
+          <h3>Create playlist</h3>
+        </div>
+        <div class="library-mobile-create__body" *ngIf="isMobileCreateOpen">
+          <input #mobileCreateInput [(ngModel)]="newPlaylistName" type="text" placeholder="New library name"
+            class="playlist__input" />
+          <button class="playlist__button" type="button" (click)="onMobileCreatePlaylist()">
+            Create
+          </button>
+        </div>
+      </div>
+
+      <div class="library-mobile-tools mobile-only">
+        <app-songs-list (playSong)="playSong.emit($event)"></app-songs-list>
+        <app-admin-songs (playSong)="playSong.emit($event)"></app-admin-songs>
+      </div>
+
+      <div class="playlist__section">
+        <div class="playlist__upload desktop-only">
+          <h2 class="playlist__title playlist__title--spaced">Upload a song</h2>
+          <form class="playlist__upload-form" (ngSubmit)="onUploadSong()">
+            <input class="playlist__input" type="text" name="uploadTitle" [(ngModel)]="uploadTitle"
+              placeholder="Song title" required />
+            <input class="playlist__input" type="text" name="uploadArtist" [(ngModel)]="uploadArtist"
+              placeholder="Artist" required />
+            <input class="playlist__input" type="text" name="uploadAlbum" [(ngModel)]="uploadAlbum"
+              placeholder="Album (optional)" />
+            <input class="playlist__input" type="url" name="uploadImage" [(ngModel)]="uploadImage"
+              placeholder="Cover image URL (optional)" />
+            <div class="playlist__upload-file">
+              <input #uploadFileInput type="file" accept="audio/*" (change)="onUploadFileSelected($event)" />
+              <span class="playlist__upload-file-label">
+                {{ uploadFile?.name || 'Choose audio file (mp3, wav, etc.)' }}
+              </span>
+            </div>
+            <button class="playlist__button" type="submit" [disabled]="uploading">
+              {{ uploading ? 'Uploading...' : 'Upload' }}
+            </button>
+          </form>
+          <p class="playlist__upload-help">Files are stored in MongoDB GridFS and stream from the API.</p>
+          <div *ngIf="uploadError" class="playlist__upload-status playlist__upload-status--error">
+            {{ uploadError }}
+          </div>
+          <div *ngIf="uploadSuccess" class="playlist__upload-status playlist__upload-status--success">
+            {{ uploadSuccess }}
+          </div>
+        </div>
+
+        <h2 class="playlist__title playlist__title--spaced">Your library</h2>
+        <div class="playlist__form">
+          <input [(ngModel)]="newPlaylistName" type="text" placeholder="New playlist name" class="playlist__input" />
+          <button class="playlist__button" (click)="onCreatePlaylist()">
+            Create
+          </button>
+        </div>
+
+        <div class="playlist__block">
+          <h3 class="playlist__subtitle">Favorite songs</h3>
+          <div class="playlist__grid">
+            <app-album-card *ngFor="let song of favoriteSongs" [album]="song"
+              (playSong)="playSong.emit($event)"></app-album-card>
+          </div>
+        </div>
+
+        <div *ngIf="customPlaylists.length">
+          <h3 class="playlist__subtitle">Your playlists</h3>
+          <div class="playlist__stack">
+            <div *ngFor="let pl of customPlaylists" class="playlist__card">
+              <div class="playlist__card-header">
+                <h4 class="playlist__card-title">{{ pl.name }} ({{ pl.songs.length }})</h4>
+                <button class="playlist__button playlist__button--small" type="button" (click)="onOpenAddSongModal(pl)">
+                  Add present songs
+                </button>
+                <button type="button" class="playlist__button playlist__button--small playlist__button--danger"
+                  (click)="showDeleteConfirm(pl)" aria-label="Delete playlist">
+                  Delete
+                </button>
+              </div>
+              <div class="playlist__grid playlist__grid--compact">
+                <app-album-card *ngFor="let song of pl.songs" [album]="song"
+                  (playSong)="playSong.emit($event)"></app-album-card>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</section>

@@ -1,0 +1,34 @@
+<section class="songs-page">
+  <div class="songs-page__header">
+    <div>
+      <h2>All Songs</h2>
+      <p>Stream your uploaded tracks directly from MongoDB-backed storage.</p>
+    </div>
+    <button class="songs-page__button" type="button" (click)="loadSongs()">Refresh</button>
+  </div>
+
+  <div *ngIf="loading" class="songs-page__state">Loading songs...</div>
+  <div *ngIf="error" class="songs-page__state songs-page__state--error">{{ error }}</div>
+
+  <div class="songs-page__grid" *ngIf="!loading && songs.length">
+    <div class="song-card" *ngFor="let song of songs">
+      <button
+        type="button"
+        class="song-card__poster"
+        (click)="playSong.emit(song)"
+        [attr.aria-label]="'Play ' + song.title"
+      >
+        <img [src]="song.image" [alt]="song.title" />
+      </button>
+      <h3>{{ song.title }}</h3>
+      <p>{{ song.artist }}</p>
+      <audio controls>
+        <source [src]="song.audioUrl" type="audio/mpeg" />
+      </audio>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !songs.length && !error" class="songs-page__state">
+    No songs found. Upload one from the Library tab.
+  </div>
+</section>

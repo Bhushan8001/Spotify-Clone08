@@ -1,0 +1,112 @@
+.songs-page {
+  padding: 24px 32px 40px;
+  color: var(--text-primary);
+}
+
+.songs-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.songs-page__header h2 {
+  margin: 0 0 6px;
+  font-size: 1.6rem;
+}
+
+.songs-page__header p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.songs-page__button {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  background: var(--spotify-green);
+  color: #0b0b0b;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.songs-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.song-card {
+  background: #151515;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 8px;
+}
+
+.song-card__poster {
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.song-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.song-card h3 {
+  margin: 0;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song-card p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.song-card audio {
+  width: 100%;
+}
+
+.songs-page__state {
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.songs-page__state--error {
+  border: 1px solid rgba(255, 90, 90, 0.5);
+  color: #ffb3b3;
+  background: rgba(255, 90, 90, 0.12);
+}
+
+@media (max-width: 900px) {
+  .songs-page {
+    padding: 16px;
+    max-width: 376px;
+  }
+
+  .songs-page__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .songs-page__button {
+    width: 100%;
+    text-align: center;
+  }
+}

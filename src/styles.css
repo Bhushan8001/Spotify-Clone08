@@ -1,0 +1,80 @@
+/* Global base styles */
+:root {
+  color-scheme: dark;
+  --spotify-green: #1db954;
+  --spotify-green-strong: #1ed760;
+  --spotify-black: #0b0b0b;
+  --spotify-dark: #121212;
+  --spotify-surface: #181818;
+  --spotify-surface-soft: #202020;
+  --text-primary: #ffffff;
+  --text-muted: #b3b3b3;
+  --text-soft: #9e9e9e;
+  --side-nav-width: 240px;
+  --panel-radius: 14px;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 20% 10%, rgba(29, 185, 84, 0.14), transparent 30%),
+    linear-gradient(180deg, #0b0b0b 0%, #050505 100%);
+  color: var(--text-primary);
+  font-family: var(--encore-body-font-stack, var(--fallback-fonts, sans-serif)), sans-serif;
+  min-height: 100vh;
+  min-width: 1180px;
+  
+}
+
+@media (max-width: 900px) {
+  body {
+    min-width: 0;
+    background: #0b0b0b;
+  }
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}

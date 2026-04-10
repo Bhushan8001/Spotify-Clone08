@@ -1,0 +1,14 @@
+<div class="popular">
+  <div class="popular__header">
+    <h2 class="popular__title">Popular artists</h2>
+    <div class="popular__actions">
+      <a href="#" class="popular__link">Show all</a>
+    </div>
+  </div>
+  <div class="popular__carousel hide-scrollbar">
+    <app-artist-card
+      *ngFor="let artist of artists"
+      [artist]="artist"
+    ></app-artist-card>
+  </div>
+</div>

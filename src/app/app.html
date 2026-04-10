@@ -1,0 +1,143 @@
+<div class="app-root">
+  <app-top-bar
+    [activeView]="currentView()"
+    [searchQuery]="searchQuery()"
+    (search)="onSearch($event)"
+    (home)="onNavigate('home')"
+  ></app-top-bar>
+  <div class="app-shell">
+    <app-side-nav
+      [activeView]="currentView()"
+      [searchQuery]="searchQuery()"
+      [recentlyPlayed]="trendingSongs"
+      [favoriteSongs]="favoriteSongs()"
+      [customPlaylists]="customPlaylists()"
+      (navigate)="onNavigate($event)"
+      (search)="onSearch($event)"
+    ></app-side-nav>
+    <div class="app-main">
+      <app-playlist
+        *ngIf="isPlaylistView()"
+        [view]="playlistView"
+        [trendingSongs]="trendingSongs"
+        [popularArtists]="popularArtists"
+        [albums]="albums"
+        [radioChannels]="radioChannels"
+        [allSongs]="allSongs"
+        [searchQuery]="searchQuery()"
+        [favoriteSongs]="favoriteSongs()"
+        [customPlaylists]="customPlaylists()"
+        (search)="onSearch($event)"
+        (playSong)="onPlaySong($event)"
+        (addToLibrary)="onAddToLibrary($event)"
+        (addToPlaylist)="onAddToPlaylist($event)"
+(createPlaylist)="onCreatePlaylist($event)"
+        (deletePlaylist)="onDeletePlaylist($event)"
+        (refreshSongs)="onRefreshSongs()"
+      ></app-playlist>
+
+      <app-songs-list
+        *ngIf="currentView() === 'songs'"
+        (playSong)="onPlaySong($event)"
+      ></app-songs-list>
+      <app-admin-songs
+        *ngIf="currentView() === 'admin'"
+        (playSong)="onPlaySong($event)"
+      ></app-admin-songs>
+    </div>
+    <aside class="now-playing-panel" *ngIf="currentSong()" [class.open]="isNowPlayingOpen()">
+    <div class="now-playing-panel__card">
+      <button
+        class="now-playing-panel__close"
+        type="button"
+        aria-label="Close now playing panel"
+        (click)="onToggleNowPlaying()"
+      >
+        ✕
+      </button>
+      <div
+        class="now-playing-panel__cover"
+        [style.background-image]="
+          'linear-gradient(rgba(0,0,0,0.24), rgba(0,0,0,0.84)), url(' + currentSong()?.image + ')'
+        "
+      >
+        <div class="now-playing-panel__label">Now Playing</div>
+      </div>
+      <div class="now-playing-panel__details">
+        <p class="now-playing-panel__tag">Listening now</p>
+        <h3 class="now-playing-panel__title">{{ currentSong()?.title }}</h3>
+        <p class="now-playing-panel__artist">{{ currentSong()?.artist }}</p>
+        <p class="now-playing-panel__album">{{ currentSong()?.album }}</p>
+      </div>
+      <div class="now-playing-panel__action-row">
+        <button
+          class="now-playing-panel__action-button"
+          type="button"
+          (click)="onTogglePlay()"
+          [disabled]="!currentSong()"
+        >
+          {{ isPlaying() ? 'Pause' : 'Play' }}
+        </button>
+      </div>
+    </div>
+  </aside>
+  </div>
+  <app-player
+    [currentSong]="currentSong()"
+    [isPlaying]="isPlaying()"
+    [shuffle]="isShuffle()"
+    [repeat]="isRepeat()"
+    (togglePlay)="onTogglePlay()"
+    (toggleShuffle)="onToggleShuffle()"
+    (toggleRepeat)="onToggleRepeat()"
+    (next)="onNext()"
+    (prev)="onPrev()"
+  ></app-player>
+  <nav class="mobile-nav mobile-only" aria-label="Bottom navigation">
+    <button
+      type="button"
+      class="mobile-nav__item"
+      [class.active]="currentView() === 'home'"
+      (click)="onNavigate('home')"
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+      </svg>
+      <span>Home</span>
+    </button>
+    <button
+      type="button"
+      class="mobile-nav__item"
+      [class.active]="currentView() === 'search'"
+      (click)="onNavigate('search')"
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M10 2a8 8 0 1 1 0 16a8 8 0 0 1 0-16zm0 2a6 6 0 1 0 0 12a6 6 0 0 0 0-12zm9.2 14.8l-3.4-3.4a1 1 0 0 0-1.4 1.4l3.4 3.4a1 1 0 0 0 1.4-1.4z" />
+      </svg>
+      <span>Search</span>
+    </button>
+    <button
+      type="button"
+      class="mobile-nav__item mobile-nav__item--cta"
+      [class.active]="currentView() === 'upload'"
+      (click)="onNavigate('upload')"
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 16V6m0 0l-4 4m4-4l4 4M4 18h16v2H4z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span>Upload</span>
+    </button>
+    <button
+      type="button"
+      class="mobile-nav__item"
+      [class.active]="currentView() === 'library'"
+      (click)="onNavigate('library')"
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M4 4h2v16H4zM8 4h2v16H8zM12 4h8v16h-8z" />
+      </svg>
+      <span>Your Library</span>
+    </button>
+  </nav>
+</div>
+  

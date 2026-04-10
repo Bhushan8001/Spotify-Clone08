@@ -1,0 +1,23 @@
+<div class="artist-card">
+  <div class="artist-card__media">
+    <img
+      [src]="artist.image"
+      [alt]="artist.name"
+      class="artist-card__image"
+    />
+    <div class="artist-card__overlay">
+      <button
+        class="artist-card__action"
+        aria-label="Play"
+      >
+        <svg class="artist-card__icon" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+  <p class="artist-card__name">
+    {{ artist.name }}
+  </p>
+  <p class="artist-card__role">Artist</p>
+</div>

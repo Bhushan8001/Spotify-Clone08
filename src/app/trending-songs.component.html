@@ -1,0 +1,10 @@
+<div class="trending">
+  <div class="trending__header">
+    <h2 class="trending__title">Trending songs</h2>
+    <a href="#" class="trending__link">Show all</a>
+  </div>
+  <div class="trending__carousel hide-scrollbar">
+    <app-album-card *ngFor="let album of songs" [album]="album" (playSong)="playSong.emit($event)"
+      (addToLibrary)="addToLibrary.emit($event)"></app-album-card>
+  </div>
+</div>

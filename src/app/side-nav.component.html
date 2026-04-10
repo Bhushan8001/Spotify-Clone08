@@ -1,0 +1,143 @@
+<aside class="side-nav" [class.collapsed]="isCollapsed">
+  <div class="side-nav__logo">
+    <div class="side-nav__brand">
+      <svg class="side-nav__logo-icon" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0m0 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10m3-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+      </svg>
+      <span class="side-nav__brand-text">Spotify</span>
+    </div>
+    <button type="button" class="side-nav__toggle" (click)="toggleCollapse()" aria-label="Toggle sidebar">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <button
+      *ngIf="isCollapsed"
+      type="button"
+      class="side-nav__collapsed-create"
+      aria-label="Create playlist"
+      (click)="navigate.emit('library')"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14" />
+        <path d="M5 12h14" />
+      </svg>
+    </button>
+  </div>
+
+  <ng-container *ngIf="!isCollapsed">
+    <div class="side-nav__library-top">
+      <h3 class="side-nav__library-title">Your Library</h3>
+      <button class="side-nav__create-pill" (click)="navigate.emit('library')">+ Create</button>
+    </div>
+
+    <div class="side-nav__library-tabs">
+      <button
+        class="side-nav__tab"
+        [class.active]="libraryTab === 'playlists'"
+        (click)="selectLibraryTab('playlists')"
+      >
+        Playlists
+      </button>
+      <button
+        class="side-nav__tab"
+        [class.active]="libraryTab === 'artists'"
+        (click)="selectLibraryTab('artists')"
+      >
+        Artists
+      </button>
+    </div>
+
+    <div class="side-nav__search">
+      <svg class="side-nav__search-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M15.5 1h-8C6.12 1 5 2.12 5 3.5v17C5 21.88 6.12 23 7.5 23h8c1.38 0 2.5-1.12 2.5-2.5v-17C18 2.12 16.88 1 15.5 1zm-4 21c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-4H7V4h8v14z" />
+      </svg>
+      <input
+        type="text"
+        class="side-nav__search-input"
+        placeholder="Search library"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch($event)"
+      />
+    </div>
+
+    <div class="side-nav__section">
+      <h4 class="side-nav__section-title">Tools</h4>
+      <ul class="side-nav__playlist-list">
+        <li>
+          <button
+            type="button"
+            class="side-nav__playlist-item"
+            (click)="navigate.emit('songs')"
+          >
+            <span>All Songs</span>
+            <small>Play from /songs</small>
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            class="side-nav__playlist-item"
+            (click)="navigate.emit('admin')"
+          >
+            <span>Manage</span>
+            <small>Delete uploads</small>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <div class="side-nav__sublist-container">
+      <ul class="side-nav__sublist">
+        <li class="side-nav__subitem" *ngFor="let item of filteredRecently | slice:0:8">
+          <img class="side-nav__subitem-thumb" [src]="item.image" [alt]="item.title" />
+          <div>
+            <strong>{{ item.title }}</strong>
+            <p>{{ item.artist }}</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="customPlaylists.length" class="side-nav__section side-nav__custom-playlists">
+      <h4 class="side-nav__section-title">Created libraries</h4>
+      <ul class="side-nav__playlist-list">
+        <li *ngFor="let playlist of customPlaylists">
+          <button
+            type="button"
+            class="side-nav__playlist-item"
+            (click)="navigate.emit('library')"
+            [attr.title]="playlist.name"
+          >
+            <span>{{ playlist.name }}</span>
+            <small>{{ playlist.songs.length }} songs</small>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </ng-container>
+
+  <div class="side-nav__recent" *ngIf="isCollapsed">
+    <h4 class="side-nav__recent-title">Recently played</h4>
+    <div class="side-nav__recent-items">
+      <button
+        *ngFor="let item of filteredRecently | slice:0:8"
+        class="side-nav__recent-item"
+        (click)="navigate.emit('library')"
+        title="{{ item.title }} by {{ item.artist }}"
+      >
+        <img [src]="item.image" [alt]="item.title" />
+      </button>
+      <button
+        *ngFor="let playlist of customPlaylists"
+        class="side-nav__recent-item side-nav__playlist-badge"
+        (click)="navigate.emit('library')"
+        [attr.title]="playlist.name"
+      >
+        <span>{{ playlist.name.charAt(0) }}</span>
+      </button>
+    </div>
+  </div>
+
+  
+</aside>
