@@ -41,10 +41,26 @@ const songsRouter = require('./routes/songs');
 const app = express();
 
 const PORT = API_PORT;
+const defaultAllowedOrigins = [
+  'http://127.0.0.1:4200',
+  'http://localhost:4200',
+  'https://agent-69d8da557564580a89--genuine-biscuit-5a741e.netlify.app',
+];
+const envOrigins = (process.env.CLIENT_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = new Set([...defaultAllowedOrigins, ...envOrigins]);
 
 app.use(
   cors({
-    origin: [CLIENT_ORIGIN, 'http://127.0.0.1:4200'],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('CORS origin not allowed'));
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 );

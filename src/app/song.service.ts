@@ -4,10 +4,11 @@ import { map, Observable } from 'rxjs';
 import { Song } from './models/song';
 
 const runtimeApiBase = (globalThis as { __API_BASE__?: string }).__API_BASE__ || '';
+const deployedApiBase = 'https://spotify-clone08-7.onrender.com';
 const defaultApiBase =
   typeof window !== 'undefined' && window.location.hostname === 'localhost'
     ? 'http://localhost:3000'
-    : '';
+    : deployedApiBase;
 const SERVER_BASE = (runtimeApiBase || defaultApiBase).replace(/\/+$/, '');
 const API_BASE = SERVER_BASE;
 const DEFAULT_IMAGES = [
