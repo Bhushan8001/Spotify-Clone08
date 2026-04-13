@@ -57,6 +57,7 @@ const PORT = API_PORT;
 const defaultAllowedOrigins = [
   'http://127.0.0.1:4200',
   'http://localhost:4200',
+  'https://soppo.netlify.app',
   'https://agent-69d8da557564580a89--genuine-biscuit-5a741e.netlify.app',
 ];
 const envOrigins = (process.env.CLIENT_ORIGIN || '')
