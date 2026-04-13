@@ -56,17 +56,11 @@ if (
 const app = express();
 const uploadsDir = path.join(__dirname, 'uploads');
 let isMongoConnected = false;
-const defaultAllowedOrigins = [
-  'http://127.0.0.1:4200',
-  'http://localhost:4200',
-  'https://soppo.netlify.app',
-  'https://agent-69d8da557564580a89--genuine-biscuit-5a741e.netlify.app',
-];
-const envOrigins = (process.env.CLIENT_ORIGIN || '')
+const envOrigins = (process.env.CLIENT_ORIGIN || CLIENT_ORIGIN)
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
-const allowedOrigins = new Set([...defaultAllowedOrigins, ...envOrigins]);
+const allowedOrigins = new Set(envOrigins);
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -81,11 +75,13 @@ app.use(
       }
       callback(new Error('CORS origin not allowed'));
     },
+    credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 );
 app.use(express.json());
 app.use('/music', express.static(uploadsDir));
+app.use('/uploads', express.static(uploadsDir));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -132,10 +128,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/healthz', (req, res) => {
-  res.status(isMongoConnected ? 200 : 503).json({
-    status: isMongoConnected ? 'ok' : 'degraded',
-    mongo: isMongoConnected ? 'connected' : 'disconnected',
-  });
+  res.status(isMongoConnected ? 200 : 503).send(isMongoConnected ? 'mongo connected' : 'mongo disconnected');
 });
 
 // Upload API
