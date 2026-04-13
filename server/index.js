@@ -18,7 +18,20 @@ function isInvalidMongoUri(uri) {
 }
 
 function hasExampleMongoUriValues(uri) {
-  return /(yourUser|yourPassword|cluster0\.xxxxx|example)/i.test(uri || '');
+  const examplePatterns = [
+    /yourUser/i,
+    /yourPassword/i,
+    /your-real-cluster/i,
+    /real-cluster/i,
+    /cluster0\.xxxxx/i,
+    /realUser/i,
+    /realPassword/i,
+    /your-atlas-connection-string/i,
+    /<username>|<password>|<cluster>/i,
+    /example/i,
+  ];
+
+  return examplePatterns.some((pattern) => pattern.test(uri || ''));
 }
 
 function isLocalMongoUri(uri) {

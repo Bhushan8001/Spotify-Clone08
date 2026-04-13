@@ -43,8 +43,10 @@ Use these settings for backend deployment:
 - Build command: `npm install`
 - Start command: `node server.js`
 - Environment variables:
-  - `MONGO_URI=<your-atlas-connection-string>`
+  - `MONGO_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/spotifyDB?retryWrites=true&w=majority`
   - `PORT=10000`
   - `CLIENT_ORIGIN=<your-frontend-url>`
+
+Do not deploy with placeholder values such as `real-cluster.mongodb.net`, `your-real-cluster.mongodb.net`, or sample credentials. Render must use the actual Atlas URI from your MongoDB project settings.
 
 Important: current upload storage uses local disk (`/uploads`). This is fine for local/dev, but cloud platforms may delete local files on restart. For production, move audio storage to Cloudinary, S3, or GridFS-only storage.
