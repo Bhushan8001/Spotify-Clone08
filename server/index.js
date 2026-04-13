@@ -7,10 +7,9 @@ require('dotenv').config();
 
 const API_PORT = process.env.API_PORT || process.env.PORT || 4000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 const MONGODB_URI =
-  process.env.MONGO_URI ||
-  process.env.MONGODB_URI ||
-  'mongodb://127.0.0.1:27017/spotifyDB';
+  process.env.MONGO_URI || process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://127.0.0.1:27017/spotifyDB');
 
 function isInvalidMongoUri(uri) {
   if (!uri || typeof uri !== 'string') return true;
@@ -18,9 +17,13 @@ function isInvalidMongoUri(uri) {
   return /<[^>]+>/.test(uri);
 }
 
-if (isInvalidMongoUri(MONGODB_URI)) {
+function isLocalMongoUri(uri) {
+  return /mongodb(\+srv)?:\/\/(localhost|127\.0\.0\.1)/i.test(uri || '');
+}
+
+if (isInvalidMongoUri(MONGODB_URI) || (isProduction && isLocalMongoUri(MONGODB_URI))) {
   console.error(
-    'Invalid MONGO_URI/MONGODB_URI. Use a real Atlas URI, for example: mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/spotifyDB?retryWrites=true&w=majority'
+    'Invalid MONGO_URI/MONGODB_URI. Set a real remote Mongo URI in Render (do not use localhost in production). Example: mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/spotifyDB?retryWrites=true&w=majority'
   );
   process.exit(1);
 }

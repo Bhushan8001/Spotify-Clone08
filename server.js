@@ -10,10 +10,10 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 const MONGODB_URI =
-  process.env.MONGO_URI ||
-  process.env.MONGODB_URI ||
-  'mongodb://127.0.0.1:27017/spotifyDB';
+  process.env.MONGO_URI || process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://127.0.0.1:27017/spotifyDB');
+const MONGO_RETRY_DELAY_MS = Number(process.env.MONGO_RETRY_DELAY_MS || 5000);
 
 function isInvalidMongoUri(uri) {
   if (!uri || typeof uri !== 'string') return true;
@@ -21,15 +21,20 @@ function isInvalidMongoUri(uri) {
   return /<[^>]+>/.test(uri);
 }
 
-if (isInvalidMongoUri(MONGODB_URI)) {
+function isLocalMongoUri(uri) {
+  return /mongodb(\+srv)?:\/\/(localhost|127\.0\.0\.1)/i.test(uri || '');
+}
+
+if (isInvalidMongoUri(MONGODB_URI) || (isProduction && isLocalMongoUri(MONGODB_URI))) {
   console.error(
-    'Invalid MONGO_URI/MONGODB_URI. Use a real Atlas URI, for example: mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/spotifyDB?retryWrites=true&w=majority'
+    'Invalid MONGO_URI/MONGODB_URI. Set a real remote Mongo URI in Render (do not use localhost in production). Example: mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/spotifyDB?retryWrites=true&w=majority'
   );
   process.exit(1);
 }
 
 const app = express();
 const uploadsDir = path.join(__dirname, 'uploads');
+let isMongoConnected = false;
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -55,13 +60,45 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
+mongoose.connection.on('connected', () => {
+  isMongoConnected = true;
+  console.log('MongoDB connected');
+});
+
+mongoose.connection.on('disconnected', () => {
+  isMongoConnected = false;
+  console.error('MongoDB disconnected');
+});
+
+mongoose.connection.on('error', (err) => {
+  isMongoConnected = false;
+  console.error('MongoDB connection error:', err.message || err);
+});
+
+async function connectMongoWithRetry() {
+  try {
+    await mongoose.connect(MONGODB_URI);
+  } catch (err) {
+    console.error(
+      `MongoDB connect failed. Retrying in ${MONGO_RETRY_DELAY_MS}ms.`,
+      err.message || err
+    );
+    setTimeout(connectMongoWithRetry, MONGO_RETRY_DELAY_MS);
+  }
+}
+
+connectMongoWithRetry();
+
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'spotify-api' });
+});
+
+app.get('/healthz', (req, res) => {
+  res.status(isMongoConnected ? 200 : 503).json({
+    status: isMongoConnected ? 'ok' : 'degraded',
+    mongo: isMongoConnected ? 'connected' : 'disconnected',
   });
+});
 
 // Upload API
 app.post('/upload', upload.single('song'), async (req, res) => {
