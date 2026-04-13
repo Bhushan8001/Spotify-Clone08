@@ -5,16 +5,27 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const Song = require('./Song');
-const { PORT, MONGODB_URI } = require('./env');
+const { PORT, MONGODB_URI, CLIENT_ORIGIN } = require('./env');
 
 const app = express();
-app.use(cors());
+const uploadsDir = path.join(__dirname, 'uploads');
+
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+app.use(
+  cors({
+    origin: [CLIENT_ORIGIN, 'http://127.0.0.1:4200'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  })
+);
 app.use(express.json());
-app.use('/music', express.static('uploads'));
+app.use('/music', express.static(uploadsDir));
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, uploadsDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);
@@ -25,8 +36,11 @@ const upload = multer({ storage });
 
 mongoose
   .connect(MONGODB_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.log(err));
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Upload API
 app.post('/upload', upload.single('song'), async (req, res) => {
@@ -56,7 +70,6 @@ app.delete('/songs/:id', async (req, res) => {
       return res.status(404).json({ message: 'Song not found' });
     }
 
-    const uploadsDir = path.join(__dirname, 'uploads');
     const normalizedPath = (song.filePath || '').replace(/\\/g, '/').replace(/^\/+/, '');
     let relativePath = normalizedPath;
 

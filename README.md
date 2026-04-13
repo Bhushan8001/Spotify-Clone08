@@ -1,93 +1,50 @@
-<<<<<<< HEAD
-# Spotify
+# Spotify-Clone08
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
+Angular frontend + Node/Express backend for a Spotify-style music player.
 
-## Development server
+## Local development
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Backend API (MongoDB + GridFS)
-
-This project now includes a simple Node/Express API that stores audio files in MongoDB (GridFS) and streams them to the Angular player.
-
-1. Ensure MongoDB is running locally.
-2. Create `server/.env` from `server/.env.example` if you want to customize the connection string or port.
-3. Install dependencies and start the API:
+Install dependencies:
 
 ```bash
 npm install
-npm run dev:server
 ```
 
-The API starts at `http://localhost:4000`.
-
-### Upload a song
-
-Send a `multipart/form-data` request to add a new song:
+Run Angular app:
 
 ```bash
-curl -X POST http://localhost:4000/api/songs ^
-  -F "title=My Track" ^
-  -F "artist=My Artist" ^
-  -F "album=My Album" ^
-  -F "image=https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop" ^
-  -F "audio=@C:\\path\\to\\song.mp3"
+npm start
 ```
 
-After upload, refresh the Angular app to see the new songs and play them.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Run backend API:
 
 ```bash
-ng generate component component-name
+npm run server
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Frontend runs on `http://localhost:4200` and backend runs on `http://localhost:3000` by default.
 
-```bash
-ng generate --help
+## Environment variables
+
+Create a `.env` file in the `spotify` folder:
+
+```env
+PORT=3000
+CLIENT_ORIGIN=http://localhost:4200
+MONGO_URI=mongodb://127.0.0.1:27017/spotifyDB
 ```
 
-## Building
+`MONGO_URI` is preferred for cloud deployment (MongoDB Atlas), while `MONGODB_URI` is also supported for compatibility.
 
-To build the project run:
+## Deployment notes (Render)
 
-```bash
-ng build
-```
+Use these settings for backend deployment:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+- Build command: `npm install`
+- Start command: `node server.js`
+- Environment variables:
+  - `MONGO_URI=<your-atlas-connection-string>`
+  - `PORT=10000`
+  - `CLIENT_ORIGIN=<your-frontend-url>`
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-=======
-# Spotify-Clone08
->>>>>>> 5159c17d2622ee418ae2fdb5274f1268d897e886
+Important: current upload storage uses local disk (`/uploads`). This is fine for local/dev, but cloud platforms may delete local files on restart. For production, move audio storage to Cloudinary, S3, or GridFS-only storage.

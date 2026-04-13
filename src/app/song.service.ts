@@ -3,8 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { Song } from './models/song';
 
-const SERVER_BASE = 'http://localhost:3000';
-const API_BASE = `${SERVER_BASE}`;
+const runtimeApiBase = (globalThis as { __API_BASE__?: string }).__API_BASE__ || '';
+const defaultApiBase =
+  typeof window !== 'undefined' && window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
+    : '';
+const SERVER_BASE = (runtimeApiBase || defaultApiBase).replace(/\/+$/, '');
+const API_BASE = SERVER_BASE;
 const DEFAULT_IMAGES = [
   'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&h=300&fit=crop',
   'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop',
