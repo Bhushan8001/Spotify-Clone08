@@ -17,13 +17,21 @@ function isInvalidMongoUri(uri) {
   return /<[^>]+>/.test(uri);
 }
 
+function hasExampleMongoUriValues(uri) {
+  return /(yourUser|yourPassword|cluster0\.xxxxx|example)/i.test(uri || '');
+}
+
 function isLocalMongoUri(uri) {
   return /mongodb(\+srv)?:\/\/(localhost|127\.0\.0\.1)/i.test(uri || '');
 }
 
-if (isInvalidMongoUri(MONGODB_URI) || (isProduction && isLocalMongoUri(MONGODB_URI))) {
+if (
+  isInvalidMongoUri(MONGODB_URI) ||
+  hasExampleMongoUriValues(MONGODB_URI) ||
+  (isProduction && isLocalMongoUri(MONGODB_URI))
+) {
   console.error(
-    'Invalid MONGO_URI/MONGODB_URI. Set a real remote Mongo URI in Render (do not use localhost in production). Example: mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/spotifyDB?retryWrites=true&w=majority'
+    'Invalid MONGO_URI/MONGODB_URI. Set a real remote Mongo URI in Render (do not use localhost or sample placeholder values in production). Example: mongodb+srv://username:password@your-real-cluster.mongodb.net/spotifyDB?retryWrites=true&w=majority'
   );
   process.exit(1);
 }
