@@ -2,7 +2,15 @@ const path = require('path');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const { API_PORT, CLIENT_ORIGIN, MONGODB_URI } = require('../env');
+
+require('dotenv').config();
+
+const API_PORT = process.env.API_PORT || process.env.PORT || 4000;
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
+const MONGODB_URI =
+  process.env.MONGO_URI ||
+  process.env.MONGODB_URI ||
+  'mongodb://127.0.0.1:27017/spotifyDB';
 
 const songsRouter = require('./routes/songs');
 

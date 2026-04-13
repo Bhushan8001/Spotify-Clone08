@@ -5,7 +5,15 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const Song = require('./Song');
-const { PORT, MONGODB_URI, CLIENT_ORIGIN } = require('./env');
+
+require('dotenv').config();
+
+const PORT = process.env.PORT || 3000;
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
+const MONGODB_URI =
+  process.env.MONGO_URI ||
+  process.env.MONGODB_URI ||
+  'mongodb://127.0.0.1:27017/spotifyDB';
 
 const app = express();
 const uploadsDir = path.join(__dirname, 'uploads');
