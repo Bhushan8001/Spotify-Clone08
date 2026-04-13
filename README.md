@@ -48,5 +48,6 @@ Use these settings for backend deployment:
   - `CLIENT_ORIGIN=<your-frontend-url>`
 
 Do not deploy with placeholder values such as `real-cluster.mongodb.net`, `your-real-cluster.mongodb.net`, or sample credentials. Render must use the actual Atlas URI from your MongoDB project settings.
+If your password contains special characters, URL-encode it before pasting it into Render.
 
 Important: current upload storage uses local disk (`/uploads`). This is fine for local/dev, but cloud platforms may delete local files on restart. For production, move audio storage to Cloudinary, S3, or GridFS-only storage.
