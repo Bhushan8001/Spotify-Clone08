@@ -12,6 +12,19 @@ const MONGODB_URI =
   process.env.MONGODB_URI ||
   'mongodb://127.0.0.1:27017/spotifyDB';
 
+function isInvalidMongoUri(uri) {
+  if (!uri || typeof uri !== 'string') return true;
+  if (!(uri.startsWith('mongodb://') || uri.startsWith('mongodb+srv://'))) return true;
+  return /<[^>]+>/.test(uri);
+}
+
+if (isInvalidMongoUri(MONGODB_URI)) {
+  console.error(
+    'Invalid MONGO_URI/MONGODB_URI. Use a real Atlas URI, for example: mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/spotifyDB?retryWrites=true&w=majority'
+  );
+  process.exit(1);
+}
+
 const songsRouter = require('./routes/songs');
 
 const app = express();
