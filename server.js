@@ -131,8 +131,15 @@ app.get('/healthz', (req, res) => {
   res.status(isMongoConnected ? 200 : 503).send(isMongoConnected ? 'mongo connected' : 'mongo disconnected');
 });
 
+function requireMongoConnection(req, res, next) {
+  if (!isMongoConnected) {
+    return res.status(503).json({ message: 'MongoDB unavailable' });
+  }
+  next();
+}
+
 // Upload API
-app.post('/upload', upload.single('song'), async (req, res) => {
+app.post('/upload', requireMongoConnection, upload.single('song'), async (req, res) => {
   const newSong = new Song({
     title: req.body.title,
     artist: req.body.artist,
@@ -146,13 +153,13 @@ app.post('/upload', upload.single('song'), async (req, res) => {
 });
 
 // Get Songs API
-app.get('/songs', async (req, res) => {
+app.get('/songs', requireMongoConnection, async (req, res) => {
   const songs = await Song.find();
   res.json(songs);
 });
 
 // Delete Song API
-app.delete('/songs/:id', async (req, res) => {
+app.delete('/songs/:id', requireMongoConnection, async (req, res) => {
   try {
     const song = await Song.findById(req.params.id);
     if (!song) {
