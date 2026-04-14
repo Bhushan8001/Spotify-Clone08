@@ -6,7 +6,6 @@ const cors = require('cors');
 require('dotenv').config();
 
 const API_PORT = process.env.API_PORT || process.env.PORT || 4000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
 const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 const MONGODB_URI =
   process.env.MONGO_URI || process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://127.0.0.1:27017/spotifyDB');
@@ -54,29 +53,8 @@ const songsRouter = require('./routes/songs');
 const app = express();
 
 const PORT = API_PORT;
-const defaultAllowedOrigins = [
-  'http://127.0.0.1:4200',
-  'http://localhost:4200',
-  'https://soppo.netlify.app',
-  'https://agent-69d8da557564580a89--genuine-biscuit-5a741e.netlify.app',
-];
-const envOrigins = (process.env.CLIENT_ORIGIN || '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-const allowedOrigins = new Set([...defaultAllowedOrigins, ...envOrigins]);
-
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error('CORS origin not allowed'));
-    },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  })
+  cors()
 );
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

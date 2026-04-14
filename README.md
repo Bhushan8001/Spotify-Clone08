@@ -51,3 +51,31 @@ Do not deploy with placeholder values such as `real-cluster.mongodb.net`, `your-
 If your password contains special characters, URL-encode it before pasting it into Render.
 
 Important: current upload storage uses local disk (`/uploads`). This is fine for local/dev, but cloud platforms may delete local files on restart. For production, move audio storage to Cloudinary, S3, or GridFS-only storage.
+
+## Frontend API connection (Angular)
+
+Frontend requests should target the deployed backend URL:
+
+```ts
+const API_URL = 'https://spotify-clone08-999.onrender.com';
+```
+
+Avoid using localhost URLs in production builds.
+
+If you hit CORS errors, ensure backend CORS is enabled:
+
+```js
+const cors = require('cors');
+app.use(cors());
+```
+
+## Final deployment setup
+
+- Netlify
+  - Build command: `npm run build`
+  - Publish directory: `dist/spotify`
+- Render
+  - Start command: `node server.js`
+  - Connect to MongoDB via `MONGO_URI`
+- Angular
+  - Calls Render API at `https://spotify-clone08-999.onrender.com`

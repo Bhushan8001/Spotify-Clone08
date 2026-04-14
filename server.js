@@ -9,7 +9,6 @@ const Song = require('./Song');
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:4200';
 const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 const MONGODB_URI =
   process.env.MONGO_URI || process.env.MONGODB_URI || (isProduction ? '' : 'mongodb://127.0.0.1:27017/spotifyDB');
@@ -56,29 +55,12 @@ if (
 const app = express();
 const uploadsDir = path.join(__dirname, 'uploads');
 let isMongoConnected = false;
-const envOrigins = (process.env.CLIENT_ORIGIN || CLIENT_ORIGIN)
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-const allowedOrigins = new Set(envOrigins);
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
-        callback(null, true);
-        return;
-      }
-      callback(new Error('CORS origin not allowed'));
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  })
-);
+app.use(cors());
 app.use(express.json());
 app.use('/music', express.static(uploadsDir));
 app.use('/uploads', express.static(uploadsDir));
