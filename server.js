@@ -56,11 +56,29 @@ const app = express();
 const uploadsDir = path.join(__dirname, 'uploads');
 let isMongoConnected = false;
 
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,
+  'https://spppotify.netlify.app',
+  'http://localhost:4200',
+].filter(Boolean);
+
+const corsOptions = {
+  origin(origin, callback) {
+    // Allow server-to-server and non-browser requests (no Origin header).
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-app.use(cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 app.use('/music', express.static(uploadsDir));
 app.use('/uploads', express.static(uploadsDir));
